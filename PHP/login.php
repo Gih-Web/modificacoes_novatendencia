@@ -1,58 +1,86 @@
 <?php
+session_start();
+header('Content-Type: application/json; charset=utf-8');
+
 require_once __DIR__ . "/conexao.php";
 
-// Função para redirecionar com parâmetros na URL
-function redirectWith($url, $params = []) {
-    if (!empty($params)) {
-        $qs = http_build_query($params);
-        $sep = (strpos($url, '?') === false) ? '?' : '&';
-        $url .= $sep . $qs;
-    }
-    header("Location: $url");
+$raw  = file_get_contents('php://input');
+$data = json_decode($raw, true);
+if (!is_array($data)) $data = $_POST;
+
+$cpfOrUser = isset($data['email']) ? (string)($data['email']) : '';
+$senha     = isset($data['senha']) ? (string)$data['senha'] : '';
+
+if ($cpfOrUser === '' || $senha === '') {
+    echo json_encode([
+        'ok' => false,
+        'msg' => 'Informe e-mail e senha.'
+    ]);
     exit;
 }
 
+
+
+// === 1. Tenta autenticar como Cliente ===
 try {
-    // só permite POST
-    if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-        redirectWith("../PAGINAS/login.html", ["erro" => "Método inválido"]);
+    $sql = "SELECT idCliente, nome FROM Cliente WHERE email = :cpf AND senha = :senha LIMIT 1";
+    $st  = $pdo->prepare($sql);
+    $st->bindValue(':cpf', $cpfOrUser);
+    $st->bindValue(':senha', $senha);
+    $st->execute();
+
+    if ($cli = $st->fetch()) {
+        $_SESSION['auth']      = true;
+        $_SESSION['user_type'] = 'cliente';
+        $_SESSION['user_id']   = (int)$cli['idCliente'];
+        $_SESSION['nome']      = $cli['nome'];
+
+        echo json_encode([
+            'ok' => true,
+            'redirect' => '../index.html'  // redireciona clientes para a home
+        ]);
+        exit;
     }
-
-    // captura os dados do formulário
-    $email = $_POST["email"] ?? "";
-    $senha = $_POST["senha"] ?? "";
-
-    // validação básica
-    if ($email === "" || $senha === "") {
-        redirectWith("../PAGINAS/login.html", ["erro" => "Preencha todos os campos"]);
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        redirectWith("../PAGINAS/login.html", ["erro" => "E-mail inválido"]);
-    }
-
-    // verifica se o email existe no banco
-    $stmt = $pdo->prepare("SELECT * FROM Cliente WHERE email = :email LIMIT 1");
-    $stmt->execute([":email" => $email]);
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$usuario) {
-        redirectWith("../PAGINAS/login.html", ["erro" => "E-mail não encontrado"]);
-    }
-
-    // compara senha (⚠️ ainda em texto puro, não seguro)
-    if ($usuario["senha"] !== $senha) {
-        redirectWith("../PAGINAS/login.html", ["erro" => "Senha incorreta"]);
-    }
-
-    // login bem-sucedido → cria sessão
-    session_start();
-    $_SESSION["usuario_id"] = $usuario["id"];   // supondo que sua tabela tenha "id"
-    $_SESSION["usuario_nome"] = $usuario["nome"];
-
-    // redireciona para a index
-    redirectWith("../PAGINAS/index.html", ["login" => "ok"]);
-
-} catch (PDOException $e) {
-    redirectWith("../PAGINAS/login.html", ["erro" => "Erro no banco de dados: " . $e->getMessage()]);
+} catch (Throwable $e) {
+    echo json_encode([
+        'ok' => false,
+        'msg' => 'Erro ao verificar cliente.'
+    ]);
+    exit;
 }
+
+// === 2. Tenta autenticar como Empresa ===
+try {
+    $sql = "SELECT idEmpresa, nome_fantasia FROM Empresa
+            WHERE (usuario = :u OR cnpj_cpf = :u) AND senha = :s LIMIT 1";
+    $st  = $pdo->prepare($sql);
+    $st->bindValue(':u', $cpfOrUser);
+    $st->bindValue(':s', $senha);
+    $st->execute();
+
+    if ($emp = $st->fetch()) {
+        $_SESSION['auth']      = true;
+        $_SESSION['user_type'] = 'empresa';
+        $_SESSION['user_id']   = (int)$emp['idEmpresa'];
+        $_SESSION['nome']      = $emp['nome_fantasia'];
+
+        echo json_encode([
+            'ok' => true,
+            'redirect' => '../PAGINAS_LOGISTA/home_lojista.html'  // redireciona empresas para promoções
+        ]);
+        exit;
+    }
+} catch (Throwable $e) {
+    echo json_encode([
+        'ok' => false,
+        'msg' => 'Erro ao verificar empresa.'
+    ]);
+    exit;
+}
+
+// === 3. Falha geral ===
+echo json_encode([
+    'ok' => false,
+    'msg' => 'Credenciais inválidas.'
+]);
+exit;

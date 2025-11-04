@@ -1,7 +1,7 @@
 <?php 
 
 $host = "localhost";
-$db   = "novatendencia";
+$db   = "mod_novatendencia";
 $user = "root";
 $pass = "";
 
@@ -15,7 +15,7 @@ try{
     //IMPRIMINDO MENSAGEM CASO TENHA DADO CERTO
     //echo "Conexão bem-sucedida!"; // (opcional para teste)
 
-} catch (PDOExption $e) {
+} catch (PDOException $e) {
     // caso dê erro ele executa o catch e imprime a mensagem 
     die("Erro ao conectar ao banco de dados: "
     . $e->getMessage());

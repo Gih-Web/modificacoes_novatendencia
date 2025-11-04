@@ -1,9 +1,9 @@
 <?php
 require_once __DIR__ . '/conexao.php';
 
-// ====================================================
-// Função auxiliar para redirecionar com parâmetros
-// ====================================================
+/* ====================================================
+   Função auxiliar para redirecionar com parâmetros
+==================================================== */
 function redirect_with(string $url, array $params = []): void {
   if (!empty($params)) {
     $qs  = http_build_query($params);
@@ -13,9 +13,9 @@ function redirect_with(string $url, array $params = []): void {
   exit;
 }
 
-// ====================================================
-// Função para ler imagem e converter em blob
-// ====================================================
+/* ====================================================
+   Função para ler imagem e converter em blob
+==================================================== */
 function read_image_to_blob(?array $file): ?string {
   if (!$file || !isset($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
     return null;
@@ -24,194 +24,212 @@ function read_image_to_blob(?array $file): ?string {
   return $bin === false ? null : $bin;
 }
 
+/* ====================================================
+   LISTAR PRODUTOS (TODOS / POR CATEGORIA / NOVIDADES / DESTAQUES)
+==================================================== */
+if ($_SERVER["REQUEST_METHOD"] === "GET" &&
+   (isset($_GET["listar"]) || isset($_GET["listarProdutos"]) || isset($_GET["listar_por_categoria"]) || isset($_GET["novidades"]) || isset($_GET["destaques"]))) {
 
+  header('Content-Type: application/json; charset=utf-8');
 
-try {
+  try {
+    $catId = (int)($_GET['idCategoria'] ?? 0);
+    $isNovidades = isset($_GET["novidades"]);
+    $isDestaques = isset($_GET["destaques"]);
 
-
-  if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["listarProdutos"])) {
-    header('Content-Type: application/json; charset=utf-8');
-
-    try {
-        // Query para pegar produtos + marca + categoria + primeira imagem
-        $sql = "SELECT 
-                    p.idProdutos,
-                    p.nome,
-                    p.descricao,
-                    p.quantidade,
-                    p.preco,
-                    p.preco_promocional,
-                    p.tamanho,
-                    p.cor,
-                    p.codigo,
-                    m.nome AS marca,
-                    c.nome AS categoria,
-                    ip.foto AS imagem
+    // ==========================
+    // 1) Base do SELECT
+    // ==========================
+    $sqlBase = "SELECT 
+                  p.idProdutos,
+                  p.nome,
+                  p.descricao,
+                  p.quantidade,
+                  p.preco,
+                  p.preco_promocional,
+                  p.tamanho,
+                  p.cor,
+                  p.codigo,
+                  m.nome AS marca,
+                  c.nome AS categoria,
+                  (SELECT ip.foto
+                     FROM IMAGEM_PRODUTO ip
+                     JOIN PRODUTO_IMAGEM pi2 ON pi2.imagem_produto = ip.idImagem_produto
+                    WHERE pi2.produto_id = p.idProdutos
+                    ORDER BY ip.idImagem_produto ASC
+                    LIMIT 1) AS imagem,
+                  (SELECT ip.texto_alternativo
+                     FROM IMAGEM_PRODUTO ip
+                     JOIN PRODUTO_IMAGEM pi2 ON pi2.imagem_produto = ip.idImagem_produto
+                    WHERE pi2.produto_id = p.idProdutos
+                    ORDER BY ip.idImagem_produto ASC
+                    LIMIT 1) AS texto_alternativo
                 FROM PRODUTOS p
                 LEFT JOIN MARCAS m ON p.marcas_id = m.IdMarcas
-                LEFT JOIN PRODUTO_CATEGORIA pc ON p.idProdutos = pc.produtos_id
-                LEFT JOIN CATEGORIA c ON pc.categoria_produtos = c.idCategoria
-                LEFT JOIN PRODUTO_IMAGEM pi ON p.idProdutos = pi.produto_id
-                LEFT JOIN IMAGEM_PRODUTO ip ON pi.imagem_produto = ip.idImagem_produto
-                GROUP BY p.idProdutos
-                ORDER BY p.idProdutos DESC";
+                LEFT JOIN PRODUTO_CATEGORIA pc ON pc.produtos_id = p.idProdutos
+                LEFT JOIN CATEGORIA c ON c.idCategoria = pc.categoria_produtos
+                WHERE 1=1";
 
-        $stmt = $pdo->query($sql);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $produtos = array_map(function ($r) {
-            return [
-                'idProdutos'           => (int)$r['idProdutos'],
-                'nome'                 => $r['nome'],
-                'descricao'            => $r['descricao'],
-                'quantidade'           => (int)$r['quantidade'],
-                'preco'                => (float)$r['preco'],
-                'preco_promocional'    => isset($r['preco_promocional']) ? (float)$r['preco_promocional'] : null,
-                'tamanho'              => $r['tamanho'],
-                'cor'                  => $r['cor'],
-                'codigo'               => $r['codigo'],
-                'marca'                => $r['marca'],
-                'categoria'            => $r['categoria'] ?? 'Sem categoria',
-                'imagem'               => !empty($r['imagem']) ? base64_encode($r['imagem']) : null
-            ];
-        }, $rows);
-
-        echo json_encode([
-            'ok' => true,
-            'count' => count($produtos),
-            'produtos' => $produtos
-        ], JSON_UNESCAPED_UNICODE);
-
-    } catch (Throwable $e) {
-        http_response_code(500);
-        echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
+    // ==========================
+    // 2) Filtros opcionais
+    // ==========================
+    if ($catId > 0) {
+      $sqlBase .= " AND pc.categoria_produtos = :catId";
+    }
+    if ($isNovidades) {
+      $sqlBase .= " AND p.novidade = 1";
+    }
+    if ($isDestaques) {
+      $sqlBase .= " AND p.destaque = 1";
     }
 
-    exit;
+    $sqlBase .= " GROUP BY p.idProdutos ORDER BY p.idProdutos DESC";
+
+    $st = $pdo->prepare($sqlBase);
+    if ($catId > 0) {
+      $st->bindValue(":catId", $catId, PDO::PARAM_INT);
+    }
+    $st->execute();
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+    // ==========================
+    // 3) Normalização e retorno
+    // ==========================
+    $produtos = array_map(function ($r) {
+      return [
+        'idProdutos'        => (int)$r['idProdutos'],
+        'nome'              => $r['nome'],
+        'descricao'         => $r['descricao'],
+        'quantidade'        => (int)$r['quantidade'],
+        'preco'             => (float)$r['preco'],
+        'preco_promocional' => isset($r['preco_promocional']) ? (float)$r['preco_promocional'] : null,
+        'tamanho'           => $r['tamanho'] ?? null,
+        'cor'               => $r['cor'] ?? null,
+        'codigo'            => $r['codigo'] ?? null,
+        'marca'             => $r['marca'] ?? null,
+        'categoria'         => $r['categoria'] ?? 'Sem categoria',
+        'imagem'            => !empty($r['imagem']) ? base64_encode($r['imagem']) : null,
+        'texto_alternativo' => $r['texto_alternativo'] ?? null
+      ];
+    }, $rows);
+
+    echo json_encode([
+      'ok' => true,
+      'count' => count($produtos),
+      'produtos' => $produtos
+    ], JSON_UNESCAPED_UNICODE);
+
+  } catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode([
+      'ok' => false,
+      'erro' => 'Erro ao listar produtos',
+      'detalhes' => $e->getMessage()
+    ]);
   }
 
-
-
-    // ====================================================
-// Somente permite POST
-// ====================================================
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-  redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
-    'erro_produto' => 'Método inválido'
-  ]);
+  exit;
 }
 
+/* ====================================================
+   CADASTRAR PRODUTO (POST)
+==================================================== */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  try {
+    $nome        = trim($_POST['nomeproduto'] ?? '');
+    $descricao   = trim($_POST['descricao'] ?? '');
+    $quantidade  = (int)($_POST['quantidade'] ?? 0);
+    $preco       = (float)($_POST['preco'] ?? 0);
+    $tamanho     = trim($_POST['tamanho'] ?? '');
+    $cor         = trim($_POST['cor'] ?? '');
+    $codigo      = (int)($_POST['codigo'] ?? 0);
+    $precoPromo  = $_POST['precopromocional'] !== '' ? (float)$_POST['precopromocional'] : null;
+    $categoriaId = (int)($_POST['categoriaproduto'] ?? 0);
+    $marcaId     = (int)($_POST['marcaproduto'] ?? 0);
+    $novidade    = isset($_POST['novidade']) ? 1 : 0;
+    $destaque    = isset($_POST['destaque']) ? 1 : 0;
 
-// ====================================================
-// Captura de campos do formulário
-// ====================================================
-$nome        = trim($_POST['nomeproduto'] ?? '');
-$descricao   = trim($_POST['descricao'] ?? '');
-$quantidade  = (int)($_POST['quantidade'] ?? 0);
-$preco       = (float)($_POST['preco'] ?? 0);
-$tamanho     = trim($_POST['tamanho'] ?? '');
-$cor         = trim($_POST['cor'] ?? '');
-$codigo      = (int)($_POST['codigo'] ?? 0);
-$precoPromo  = $_POST['precopromocional'] !== '' ? (float)$_POST['precopromocional'] : null;
-$categoriaId = (int)($_POST['categoriaproduto'] ?? 0);
-$marcaId     = (int)($_POST['marcaproduto'] ?? 0);
+    if ($nome === '' || $quantidade <= 0 || $preco <= 0 || $codigo <= 0 || $marcaId <= 0) {
+      redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
+        'erro_produto' => 'Preencha todos os campos obrigatórios.'
+      ]);
+    }
 
-// ====================================================
-// Validação básica
-// ====================================================
-if ($nome === '' || $quantidade <= 0 || $preco <= 0 || $codigo <=0 || $marcaId <= 0) {
-  redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
-    'erro_produto' => 'Preencha todos os campos obrigatórios.'
-  ]);
-}
-  // ====================================================
-  // Inicia transação (garantia de integridade)
-  // ====================================================
-  $pdo->beginTransaction();
+    $pdo->beginTransaction();
 
+    $sqlProduto = "INSERT INTO PRODUTOS 
+      (nome, descricao, quantidade, preco, tamanho, cor, codigo, preco_promocional, marcas_id, novidade, destaque)
+      VALUES (:nome, :descricao, :quantidade, :preco, :tamanho, :cor, :codigo, :precoPromo, :marcaId, :novidade, :destaque)";
+    $stmt = $pdo->prepare($sqlProduto);
+    $stmt->bindValue(':nome', $nome);
+    $stmt->bindValue(':descricao', $descricao);
+    $stmt->bindValue(':quantidade', $quantidade, PDO::PARAM_INT);
+    $stmt->bindValue(':preco', $preco);
+    $stmt->bindValue(':tamanho', $tamanho);
+    $stmt->bindValue(':cor', $cor);
+    $stmt->bindValue(':codigo', $codigo);
+    $stmt->bindValue(':precoPromo', $precoPromo !== null ? $precoPromo : null, $precoPromo !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
+    $stmt->bindValue(':marcaId', $marcaId, PDO::PARAM_INT);
+    $stmt->bindValue(':novidade', $novidade, PDO::PARAM_INT);
+    $stmt->bindValue(':destaque', $destaque, PDO::PARAM_INT);
+    $stmt->execute();
 
+    $produtoId = (int)$pdo->lastInsertId();
 
+    $imagens = [
+      $_FILES['imgproduto1'] ?? null,
+      $_FILES['imgproduto2'] ?? null,
+      $_FILES['imgproduto3'] ?? null
+    ];
 
-  // ====================================================
-  // 1. Inserir produto na tabela PRODUTOS
-  // ====================================================
-  $sqlProduto = "INSERT INTO PRODUTOS 
-    (nome, descricao, quantidade, preco, tamanho, cor, codigo, preco_promocional, marcas_id)
-    VALUES (:nome, :descricao, :quantidade, :preco, :tamanho, :cor, :codigo, :precoPromo, :marcaId)";
-  
-  $stmt = $pdo->prepare($sqlProduto);
-  $stmt->bindValue(':nome', $nome);
-  $stmt->bindValue(':descricao', $descricao);
-  $stmt->bindValue(':quantidade', $quantidade, PDO::PARAM_INT);
-  $stmt->bindValue(':preco', $preco);
-  $stmt->bindValue(':tamanho', $tamanho);
-  $stmt->bindValue(':cor', $cor);
-  $stmt->bindValue(':codigo', $codigo);
-  if ($precoPromo === null) $stmt->bindValue(':precoPromo', null, PDO::PARAM_NULL);
-  else $stmt->bindValue(':precoPromo', $precoPromo);
-  $stmt->bindValue(':marcaId', $marcaId, PDO::PARAM_INT);
-  $stmt->execute();
+    foreach ($imagens as $img) {
+      $blob = read_image_to_blob($img);
+      if ($blob === null) continue;
 
-  $produtoId = (int)$pdo->lastInsertId();
+      $sqlImg = "INSERT INTO IMAGEM_PRODUTO (foto, texto_alternativo)
+                 VALUES (:foto, :alt)";
+      $stmtImg = $pdo->prepare($sqlImg);
+      $stmtImg->bindValue(':foto', $blob, PDO::PARAM_LOB);
+      $stmtImg->bindValue(':alt', $nome);
+      $stmtImg->execute();
 
-  // ====================================================
-  // 2. Inserir as imagens (se existirem)
-  // ====================================================
-  $imagens = [
-    $_FILES['imgproduto1'] ?? null,
-    $_FILES['imgproduto2'] ?? null,
-    $_FILES['imgproduto3'] ?? null
-  ];
+      $imgId = (int)$pdo->lastInsertId();
 
-  foreach ($imagens as $img) {
-    $blob = read_image_to_blob($img);
-    if ($blob === null) continue;
+      $sqlRel = "INSERT INTO PRODUTO_IMAGEM (produto_id, imagem_produto)
+                 VALUES (:produto, :imagem)";
+      $stmtRel = $pdo->prepare($sqlRel);
+      $stmtRel->bindValue(':produto', $produtoId, PDO::PARAM_INT);
+      $stmtRel->bindValue(':imagem', $imgId, PDO::PARAM_INT);
+      $stmtRel->execute();
+    }
 
-    $sqlImg = "INSERT INTO IMAGEM_PRODUTO (foto, texto_alternativo)
-               VALUES (:foto, :alt)";
-    $stmtImg = $pdo->prepare($sqlImg);
-    $stmtImg->bindValue(':foto', $blob, PDO::PARAM_LOB);
-    $stmtImg->bindValue(':alt', $nome);
-    $stmtImg->execute();
+    if ($categoriaId > 0) {
+      $sqlCat = "INSERT INTO PRODUTO_CATEGORIA (produtos_id, produtos_marcas_id, categoria_produtos)
+                 VALUES (:prod, :marca, :cat)";
+      $stmtCat = $pdo->prepare($sqlCat);
+      $stmtCat->bindValue(':prod', $produtoId, PDO::PARAM_INT);
+      $stmtCat->bindValue(':marca', $marcaId, PDO::PARAM_INT);
+      $stmtCat->bindValue(':cat', $categoriaId, PDO::PARAM_INT);
+      $stmtCat->execute();
+    }
 
-    $imgId = (int)$pdo->lastInsertId();
+    $pdo->commit();
 
-    // Vincular imagem ao produto
-    $sqlRel = "INSERT INTO PRODUTO_IMAGEM (produto_id, imagem_produto)
-               VALUES (:produto, :imagem)";
-    $stmtRel = $pdo->prepare($sqlRel);
-    $stmtRel->bindValue(':produto', $produtoId, PDO::PARAM_INT);
-    $stmtRel->bindValue(':imagem', $imgId, PDO::PARAM_INT);
-    $stmtRel->execute();
+    redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
+      'cadastro_produto' => 'ok'
+    ]);
+
+  } catch (Throwable $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
+      'erro_produto' => 'Erro ao cadastrar: ' . $e->getMessage()
+    ]);
   }
-
-  // ====================================================
-  // 3. Relacionar produto com categoria
-  // ====================================================
-  if ($categoriaId > 0) {
-    $sqlCat = "INSERT INTO PRODUTO_CATEGORIA (produtos_id, produtos_marcas_id, categoria_produtos)
-               VALUES (:prod, :marca, :cat)";
-    $stmtCat = $pdo->prepare($sqlCat);
-    $stmtCat->bindValue(':prod', $produtoId, PDO::PARAM_INT);
-    $stmtCat->bindValue(':marca', $marcaId, PDO::PARAM_INT);
-    $stmtCat->bindValue(':cat', $categoriaId, PDO::PARAM_INT);
-    $stmtCat->execute();
-  }
-
-  // ====================================================
-  // Concluir transação
-  // ====================================================
-  $pdo->commit();
-
-  redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
-    'cadastro_produto' => 'ok'
-  ]);
-
-} catch (Throwable $e) {
-  $pdo->rollBack();
-  redirect_with('../PAGINAS_LOGISTA/cadastro_produtos_logista.html', [
-    'erro_produto' => 'Erro ao cadastrar: ' . $e->getMessage()
-  ]);
 }
 
-?>
+/* ====================================================
+   MÉTODO INVÁLIDO
+==================================================== */
+http_response_code(405);
+echo json_encode(['ok' => false, 'erro' => 'Método inválido']);
+exit;

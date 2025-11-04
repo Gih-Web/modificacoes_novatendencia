@@ -1,0 +1,66 @@
+body {
+  font-family: 'Quicksand', sans-serif;
+  color: #333;
+  background-color: #fffaf5;
+}
+
+.logo {
+  height: 40px;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+  opacity: 0.8;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.card {
+  border-radius: 12px;
+  background-color: #fff;
+  border: 1px solid #f1e1b0;
+}
+
+.card-header h5 {
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid #f1e1b0;
+  background-color: #fefcf9;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #f5c518;
+  box-shadow: 0 0 0 0.2rem rgba(245,197,24,0.25);
+}
+
+.btn-custom {
+  background-color: #f5c518;
+  color: #333;
+  font-weight: 600;
+  border-radius: 50px;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-custom:hover {
+  background-color: #f4b90a;
+}
+
+.thumb {
+  height: 130px;
+  border: 1px dashed #f5c518;
+}
+
+footer {
+  color: #777;
+}

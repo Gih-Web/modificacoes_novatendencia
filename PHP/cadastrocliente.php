@@ -14,7 +14,7 @@ function redirectWith($url, $params = []) {
 
 try {
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-        redirectWith("../PAGINAS/cadastro.html", ["erro" => "Método inválido"]);
+        redirectWith("../PAGINAS_CLIENTE/cadastro.html", ["erro" => "Método inválido"]);
     }
 
     // Captura dos dados
@@ -48,20 +48,17 @@ try {
     }
 
     if (!empty($erros_validacao)) {
-        redirectWith("../PAGINAS/cadastro.html", ["erro" => $erros_validacao[0]]);
+        redirectWith("../PAGINAS_CLIENTE/cadastro.html", ["erro" => $erros_validacao[0]]);
     }
 
     // Verificar CPF já cadastrado
     $stmt = $pdo->prepare("SELECT 1 FROM Cliente WHERE cpf = :cpf LIMIT 1");
     $stmt->execute([':cpf' => $cpf]);
     if ($stmt->fetch()) {
-        redirectWith("../PAGINAS/cadastro.html", ["erro" => "CPF já cadastrado."]);
+        redirectWith("../PAGINAS_CLIENTE/cadastro.html", ["erro" => "CPF já cadastrado."]);
     }
 
-    // Criptografar a senha
-    $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-
-    // Inserção no banco
+    // Inserção no banco (senha em texto puro)
     $sql = "INSERT INTO Cliente (nome, cpf, telefone, email, senha)
             VALUES (:nome, :cpf, :telefone, :email, :senha)";
     $stmt = $pdo->prepare($sql);
@@ -70,16 +67,17 @@ try {
         ":cpf" => $cpf,
         ":telefone" => $telefone,
         ":email" => $email,
-        ":senha" => $senhaHash
+        ":senha" => $senha // sem hash
     ]);
 
     if ($inserir) {
-        redirectWith("../PAGINAS/login.html", ["cadastro" => "ok"]);
+        redirectWith("../PAGINAS_CLIENTE/login.html", ["cadastro" => "ok"]);
     } else {
-        redirectWith("../PAGINAS/cadastro.html", ["erro" => "Erro ao cadastrar no banco de dados."]);
+        redirectWith("../PAGINAS_CLIENTE/cadastro.html", ["erro" => "Erro ao cadastrar no banco de dados."]);
     }
 
 } catch (PDOException $e) {
-    redirectWith("../PAGINAS/cadastro.html", ["erro" => "Erro no banco de dados: " . $e->getMessage()]);
+    redirectWith("../PAGINAS_CLIENTE/cadastro.html", ["erro" => "Erro no banco de dados: " . $e->getMessage()]);
 }
+
 ?>

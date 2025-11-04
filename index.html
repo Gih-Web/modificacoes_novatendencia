@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nova Tendência</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="CSS/index.css">
+ 
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="logo">
+    <img src="IMG/Logo1.png" alt="Logo da Loja Nova Tendência"/>
+  </div>
+
+  <div class="search-box">
+    <input type="text" class="pesquisar form-control" placeholder="Pesquisar">
+  </div>
+
+  <div class="menu-toggle" id="menu-toggle">☰</div>
+
+  <div class="icons" id="icons">
+    <img src="IMG/ajuda-chat.png" alt="Chat">
+    <div class="cart-wrapper" style="position: relative; display: inline-block;">
+      <a href="/PAGINAS/carrinho.html"><img src="IMG/sacola.png" id="cart-icon" alt="Carrinho"></a>
+      <span id="cart-count" style="
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: red;
+          color: white;
+          font-size: 12px;
+          font-weight: bold;
+          padding: 2px 6px;
+          border-radius: 50%;
+          display: none;
+      ">0</span>
+    </div>
+    <a href="/PAGINAS/login.html"><img src="IMG/usuario.png" alt="Perfil"></a>
+  </div>
+
+</header>
+
+<main class="container-fluid p-0">
+
+ <!-- CARROSSEL DE BANNERS -->
+    <div id="carouselBanners" class="carousel slide carousel-fade" data-bs-ride="carousel">
+      <div class="carousel-indicators" id="banners-indicators"></div>
+      <div class="carousel-inner" id="banners-home">
+        <!-- Itens serão inseridos via JS -->
+        <div class="carousel-item active">
+          <div class="p-3 text-muted">Carregando banners…</div>
+        </div>
+      </div>
+
+      <button class="carousel-control-prev" type="button"
+              data-bs-target="#carouselBanners" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+
+      <button class="carousel-control-next" type="button"
+              data-bs-target="#carouselBanners" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Próximo</span>
+      </button>
+    </div>
+
+ <!-- =======================
+       CATEGORIAS + PRODUTOS
+  ======================== -->
+  <section class="container py-5">
+
+    <!-- Título e filtros -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h5 mb-0">Categorias</h2>
+    </div>
+
+    <!-- Chips horizontais -->
+    <div id="cats-chips" class="d-flex gap-2 overflow-auto pb-2">
+      <!-- Botão fixo -->
+      <button type="button" class="btn btn-primary btn-sm rounded-pill px-3" data-cat="">Todas as categorias</button>
+    </div>
+
+    <!-- Select oculto (acessibilidade / fallback) -->
+    <select id="filtro-categoria" class="form-select d-none" aria-hidden="true">
+      <option value="">Todas as categorias</option>
+    </select>
+
+    <hr class="my-4" />
+
+    <!-- Lista de produtos -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h5 mb-0">Produtos</h2>
+    </div>
+
+    <div id="produtos-area">
+      <div id="produtos-status" class="text-muted">Carregando produtos…</div>
+      <div id="produtos-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3"></div>
+    </div>
+  </section>
+
+
+  <!-- =======================
+       PRODUTOS EM DESTAQUE
+  ======================== -->
+  <section class="container py-5">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h5 mb-0">Produtos em Destaque</h2>
+    </div>
+    <div id="produtos-destaque" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+      <div class="text-muted p-3">Carregando produtos em destaque…</div>
+    </div>
+  </section>
+
+
+  <!-- =======================
+       NOVIDADES
+  ======================== -->
+  <section class="container py-5">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h5 mb-0">Novidades</h2>
+    </div>
+    <div id="produtos-novidade" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+      <div class="text-muted p-3">Carregando novidades…</div>
+    </div>
+  </section>
+
+</main>
+<footer class="footer">
+  <div class="footer-esquerdo">
+    <a href="#"><p>Sobre nós</p></a>
+    <a href="#"><p>Novidades</p></a>
+    <p>Desenvolvido por Giovanna Evellyn Santos Silva</p>
+  </div>
+  <div class="footer-direito">
+    <p>Conheça nossas redes sociais</p>
+    <div class="icons-sociais">
+      <a href="#"><img src="../IMG/instagram.png" alt="Instagram"></a>
+      <a href="#"><img src="../IMG/facebook.png" alt="Facebook"></a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="JS/home_cliente.js"></script>
+<script src="JS//categorias.js"></script>
+</body>
+</html>

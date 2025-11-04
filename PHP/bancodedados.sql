@@ -1,6 +1,8 @@
- CREATE DATABASE novatendencia; 
+drop DATABASE mod_novatendencia; 
 
- USE novatendencia;
+ CREATE DATABASE mod_novatendencia; 
+
+ USE mod_novatendencia;
 
 -- Criar Tabelas
 CREATE TABLE CLIENTE(
@@ -12,6 +14,11 @@ email VARCHAR(200),
 senha VARCHAR(12),
 foto_perfil LONGBLOB
 );
+
+ALTER TABLE CLIENTE MODIFY cpf VARCHAR(14) UNIQUE;
+ALTER TABLE EMPRESA MODIFY cnpj_cpf VARCHAR(18);
+
+
 
 CREATE TABLE ENDERECO(
 idEndereco INT PRIMARY KEY AUTO_INCREMENT,
@@ -44,7 +51,7 @@ desconto DOUBLE
 
 
 CREATE TABLE BANNERS(
- idBanners INT PRIMARY KEY AUTO_INCREMENT,
+idBanners INT PRIMARY KEY AUTO_INCREMENT,
 imagem LONGBLOB NOT NULL,
 data_validade DATE NOT NULL,
 descricao VARCHAR(45) NOT NULL,
@@ -54,7 +61,7 @@ CONSTRAINT FOREIGN KEY (categoria_id) REFERENCES
 CATEGORIA (idCategoria)
 );
 
-ALTER TABLE BANNERS CHANGE idBannres idBanners INT;
+ 
 
 CREATE TABLE CUPOM (
 idCupom INT PRIMARY KEY AUTO_INCREMENT,
@@ -296,4 +303,4 @@ ALTER TABLE FORMA_PAGAMENTO DROP COLUMN cupom_id;
 select * from forma_pagamento;
 select * from frete; 
 
-select * from cliente_id
+select * from client;
