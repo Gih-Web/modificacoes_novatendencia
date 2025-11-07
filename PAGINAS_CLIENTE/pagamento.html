@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minha Sacola</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/CSS/pagamento.css">
+</head>
+<body class="bg-light">
+
+<!-- Header -->
+<header class="header d-flex align-items-center justify-content-between p-2 border-bottom bg-dark text-white">
+  <div class="logo">
+    <img src="../IMG/Logo1.png" alt="Logo da Loja Nova Tendência" height="40"/>
+  </div>
+
+  <div class="search-box flex-grow-1 px-3">
+    <input type="text" class="pesquisar form-control" placeholder="Pesquisar">
+  </div>
+
+    <div class="menu-toggle" id="menu-toggle">☰</div>
+
+  <div class="icons" id="icons">
+    <img src="../IMG/ajuda-chat.png" alt="Chat">
+    <div class="cart-wrapper" style="position: relative; display: inline-block;">
+      <img src="../IMG/sacola.png" id="cart-icon" alt="Carrinho">
+      <span id="cart-count" style="
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: red;
+          color: white;
+          font-size: 12px;
+          font-weight: bold;
+          padding: 2px 6px;
+          border-radius: 50%;
+          display: none;
+      ">0</span>
+    </div>
+    <img src="../IMG/usuario.png" alt="Perfil">
+  </div>
+  
+
+</header>
+
+<!-- Main -->
+<main class="container my-4">
+  <div class="row">
+    <!-- Lista de Itens -->
+    <div class="col-lg-8">
+      <h5 class="titulo-pagamento fw-bold mb-4">ESCOLHA A FORMA DE PAGAMENTO</h5>
+
+      <!-- FORMA DE PAGAMENTO-->
+
+      <div class="pagamento-container p-4 bg-white shadow-sm rounded">
+            <h5 class="fw-bold mb-3">FORMAS DE PAGAMENTO</h5>
+            <div class="d-flex gap-3 mb-4">
+                <img src="../IMG/pix.png" alt="Pix" class="icone-pagamento">
+                <img src="../IMG/cartao.png" alt="Cartão" class="icone-pagamento">
+                <img src="../IMG/boleto.png" alt="Boleto" class="icone-pagamento">
+            </div>
+
+            <h5 class="fw-bold mb-3">DADOS PARA O FRETE</h5>
+            <p>
+                Rua das Palmeiras, 250 – Jardim Central<br>
+                São Paulo – SP<br>
+                CEP: 01234-567<br>
+                Nome: Mariana Oliveira<br>
+                CPF: 075566381-08
+            </p>
+
+            <a href="/PAGINAS/transportadora.html"><button class="btn btn-dark mb-3">ADICIONAR TRANSPORTADORA</button></a>
+            <p><strong>TRANSPORTADORA:</strong> Jadlog</p>
+        </div>
+
+
+        
+
+    </div> <!-- /.col-lg-8 -->
+
+    <!-- Resumo -->
+    <div class="col-lg-4">
+      <div class="resumo-compra border p-3 bg-white shadow-sm rounded">
+        <h6 class="fw-bold mb-3">RESUMO DA COMPRA</h6>
+        <div class="d-flex justify-content-between mb-1">
+          <span>Subtotal:</span> <span>R$ 269,70</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1">
+          <span>Desconto:</span> <span>R$ 0,00</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold text-danger">
+          <span>Total:</span> <span>R$ 269,70</span>
+        </div>
+
+        <P class="text-salvar">SALVAR ENDEREÇO DE ENTREGA:</P>
+        <a href="/index.html"><button class=" btn-finalizarcompra btn btn-success w-100  fw-bold rounded">FINALIZAR COMPRA</button>
+      </div></a>
+    </div>
+
+  </div>
+
+
+
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer d-flex justify-content-between p-3 border-top bg-white">
+  <div class="footer-esquerdo">
+    <a href="#"><p>Sobre nós</p></a>
+    <a href="#"><p>Novidades</p></a>
+    <p>Desenvolvido por Giovanna Evellyn Santos Silva</p>
+  </div>
+  <div class="footer-direito">
+    <p>Conheça nossas redes sociais</p>
+    <div class="icons-sociais">
+      <a href="#"><img src="../IMG/instagram.png" alt="Instagram" height="28"></a>
+      <a href="#"><img src="../IMG/facebook.png" alt="Facebook" height="28"></a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/JS/carrinho.js" defer></script>
+</body>
+</html>

@@ -1,24 +1,78 @@
+/* Reset geral */
 html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-
-/* Conteúdo principal ocupa todo o espaço disponível */
-.conteudo-principal {
-    flex: 1;
-}
-
-/* ---------------- Header ---------------- */
-.header {
-  background-color: #1F1F1F; 
-  padding: 20px;
-  align-items: center;
+  height: 100%;
+  margin: 0;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
 }
+
+body {
+  background-color: #ffffff;
+}
+
+/* MAIN */
+.conteudo-principal {
+  flex: 1;
+}
+
+/* título */
+.titulo-transportadora {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+/* botões de transportadora */
+.opcoes-transportadora {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.btn-opcao {
+  background-color: #e9e9e9;
+  border: none;
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-opcao:hover {
+  background-color: #cfcfcf;
+  cursor: pointer;
+}
+
+/* botão salvar */
+.btn-salvar {
+  background-color: #000000;
+  color: #fff;
+  border: none;
+  padding: 12px 40px;
+  font-size: 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  margin-bottom: 80px;
+}
+
+.btn-salvar:hover {
+  background-color: #333333;
+}
+
+/* -------- Header / Footer (mesmos estilos que você já usa) -------- */
+/* ---------------- Header ---------------- */
+.header{
+    background-color: #1F1F1F; 
+    padding: 20px;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
 
 .logo {
   display: flex;
@@ -130,6 +184,7 @@ html, body {
 }
 
 
+
 /* ---------------- Footer ---------------- */
 .footer {
   display: flex;
@@ -154,8 +209,11 @@ html, body {
   gap: 5px;
 }
 .footer-esquerdo a:hover { text-decoration: underline; }
+.footer-direito{
+    text-align: right; /*Texto alinhado à direito*/
 
-.footer-direito { text-align: right; }
+}
+
 
 .icons-sociais a { margin-left: 10px; }
 .icons-sociais img {
@@ -164,5 +222,3 @@ html, body {
   transition: transform 0.3s ease;
 }
 .icons-sociais img:hover { transform: scale(1.2); }
-
-

@@ -11,6 +11,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <link rel="stylesheet" href="../CSS/global.css">
+<link rel="stylesheet" href="../CSS/style.css">
 
 <style>
   :root {
@@ -265,50 +267,73 @@
 
 <body>
 <!-- Sidebar -->
-<aside class="sidebar">
-  <div class="logo">
-    <i class="bi bi-shop" style="color:var(--accent);font-size:20px;"></i>
-  </div>
+<!-- Importar Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <div class="nav-icon active">
-    <i class="bi bi-house"></i>
-    <span>Início</span>
-  </div>
+<!-- Navbar preta -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-black fixed-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-white" href="../PAGINAS_LOGISTA/teste.html">Nova Tendência</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="nav-icon">
-    <i class="bi bi-bag"></i>
-    <span>Produtos</span>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link active" href="../PAGINAS_LOGISTA/teste.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="../PAGINAS_LOGISTA/conversas_logista.html">Conversas</a></li>
+        <li class="nav-item"><a class="nav-link" href="../PAGINAS_LOGISTA/cadastro_produtos_logista.html#produtos">Produtos</a></li>
+        <li class="nav-item"><a class="nav-link" href="../PAGINAS_LOGISTA/promocoes_logista.html">Promoções</a></li>
+        <li class="nav-item"><a class="nav-link" href="../PAGINAS_LOGISTA/frete_pagamento_logista.html">Pagamentos e Frete</a></li>
+      </ul>
+    </div>
   </div>
+</nav>
 
-  <div class="nav-icon">
-    <i class="bi bi-graph-up"></i>
-    <span>Relatórios</span>
-  </div>
-
-  <div style="flex:1"></div>
-
-  <div class="nav-icon">
-    <i class="bi bi-x-lg"></i>
-    <span>Sair</span>
-  </div>
-</aside>
 
 <!-- Conteúdo principal -->
 <main class="main">
+ <nav class="navbar navbar-expand-lg navbar-dark bg-black fixed-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-white" href="teste.html">Nova Tendência</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link active" href="teste.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="conversas_logista.html">Conversas</a></li>
+        <li class="nav-item"><a class="nav-link" href="cadastro_produtos_logista.html#produtos">Produtos</a></li>
+        <li class="nav-item"><a class="nav-link" href="promocoes_logista.html">Promoções</a></li>
+        <li class="nav-item"><a class="nav-link" href="frete_pagamento_logista.html">Pagamentos e Frete</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
   <div class="topbar">
     <div>
       <div class="page-title">Painel do Lojista</div>
-      <div class="text-muted">Resumo rápido — atalhos e métricas</div>
+      <div class="text-muted">Painel do Lojista — Acesso Rápido</div>
     </div>
-    <button class="btn" style="background:var(--accent); color:#111; font-weight:600; border:none; border-radius:6px; padding:8px 14px;">Novo</button>
+    
   </div>
 
   <!-- Mini painéis principais -->
   <section class="cards-grid">
+
+    
     <div class="mini-panel">
       <div class="icon-box"><i class="bi bi-box-seam"></i></div>
       <div><h5>Produtos</h5><div class="value" id="val-produtos">0</div></div>
     </div>
+
+ 
 
     <div class="mini-panel">
       <div class="icon-box"><i class="bi bi-cart-check"></i></div>
@@ -328,22 +353,22 @@
 
   <!-- Cards de acesso rápido -->
   <section class="access-cards">
-    <a class="access-card" href="cadastro_produto.html">
+    <a class="access-card" href="../PAGINAS_LOGISTA/cadastro_produtos_logista.html#produtos">
       <i class="bi bi-box-seam"></i>
       <div><span class="title">Produtos</span><p>Adicionar e editar produtos</p><div class="btn-acesso">Acessar</div></div>
     </a>
 
-    <a class="access-card" href="cadastro_categoria.html">
+    <a class="access-card" href="../PAGINAS_LOGISTA/cadastro_produtos_logista.html#categorias">
       <i class="bi bi-tags"></i>
       <div><span class="title">Categorias</span><p>Organize por categorias</p><div class="btn-acesso">Acessar</div></div>
     </a>
 
-    <a class="access-card" href="cadastro_marca.html">
+    <a class="access-card" href="../PAGINAS_LOGISTA/cadastro_produtos_logista.html#marcas">
       <i class="bi bi-award"></i>
       <div><span class="title">Marcas</span><p>Gerencie suas marcas</p><div class="btn-acesso">Acessar</div></div>
     </a>
 
-    <a class="access-card" href="cadastro_banners.html">
+    <a class="access-card" href="../PAGINAS_LOGISTA/promocoes_logista.html">
       <i class="bi bi-image"></i>
       <div><span class="title">Banners</span><p>Atualize banners do site</p><div class="btn-acesso">Acessar</div></div>
     </a>
@@ -369,8 +394,20 @@
     </div>
   </section>
 
-  <div class="dashboard-footer">© <span id="year"></span> — Painel do Lojista</div>
+ 
 </main>
+
+<script>
+  // Atualiza o ano automaticamente
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+<style>
+  .footer a:hover {
+    color: #ffd43b; /* Destaque ao passar o mouse */
+  }
+</style>
+
 
 <script>
 const db = {

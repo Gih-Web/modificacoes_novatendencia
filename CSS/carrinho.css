@@ -5,7 +5,9 @@ html, body {
     flex-direction: column;
 }
 
-
+body{
+    background-color: #EEEEEE;
+}
 /* Conteúdo principal ocupa todo o espaço disponível */
 .conteudo-principal {
     flex: 1;
@@ -165,4 +167,151 @@ html, body {
 }
 .icons-sociais img:hover { transform: scale(1.2); }
 
+.bi-heart-fill {
+  color: #FFCE80 !important;  /* cor rosa */
+}
+
+
+.btn-warning {
+  background-color: #FFCE80 !important;
+  border: none !important;
+  color: #000 !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active {
+  background-color: #e2ad58 !important;
+  color: #000 !important;
+  box-shadow: none !important;
+}
+
+.btn.disabled,
+.btn:disabled {
+  pointer-events: none; /* não clicável */
+}
+
+
+/* ----------- Itens do carrinho ----------- */
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.product-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.product-info img {
+  width: 90px;
+  height: auto;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.product-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Quantidade */
+.qty-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qty-btn {
+  background: #FFCE80;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.qty-btn:hover { background: #f5be66; }
+
+.qty-value {
+  min-width: 24px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* ----------- Favoritos ----------- */
+.favorites-wrap {
+  margin-top: 2rem;
+}
+
+.favorites-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.favorites-card {
+  flex: 0 0 180px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.favorites-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+
+
+/* No desktop: vira grid */
+@media (min-width: 768px) {
+  .favorites-scroll {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    overflow: visible;
+  }
+  .favorites-card { flex: initial; }
+}
+
+.favorites-wrap {
+  margin-top: 40px; /* aumenta o espaço acima dos favoritos */
+  margin-bottom: 40px; /* aumenta ou diminui conforme desejar */
+}
+
+.coracao-titulo svg {
+  vertical-align: middle; /* alinha com o texto */
+}
+
+
+
+.coracao-titulo svg {
+  vertical-align: middle;
+  position: relative;
+  top: -2px; /* ajusta a altura para cima */
+}
+
+
+.resumo-compra {
+  transition: transform 0.2s, box-shadow 0.2s; /* animação suave */
+  position: sticky; /* acompanha rolagem */
+  top: 20px; /* distância do topo da tela */
+}
+
+.resumo-compra:hover {
+  transform: translateY(-3px); /* levanta levemente */
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2); /* sombra mais intensa no hover */
+}
 
